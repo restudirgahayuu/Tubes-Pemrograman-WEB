@@ -31,6 +31,30 @@ if(isset($_POST['simpan'])){
     </script>";
 }
 
+// =========================
+// UPDATE TAGIHAN
+// =========================
+if(isset($_POST['update'])){
+
+    $id = $_POST['id_tagihan'];
+    $bulan = $_POST['bulan'];
+    $tahun = $_POST['tahun'];
+    $status = $_POST['status'];
+
+    mysqli_query($conn,"UPDATE tagihan SET
+        bulan='$bulan',
+        tahun='$tahun',
+        status='$status'
+        WHERE id_tagihan='$id'
+    ");
+
+    echo "<script>
+        alert('Tagihan berhasil diubah');
+        window.location='index.php';
+    </script>";
+
+}
+
 // Hapus
 if(isset($_GET['hapus'])){
 
@@ -117,8 +141,6 @@ $penghuni = mysqli_query($conn,"SELECT * FROM penghuni");
 
 </div>
 
-</div>
-
 <div class="content">
 
 <div class="d-flex justify-content-between mb-3">
@@ -130,223 +152,348 @@ class="btn btn-success"
 data-bs-toggle="modal"
 data-bs-target="#tambah">
 
-Tambah Tagihan
+        Tambah Tagihan
 
-</button>
+        </button>
+
+    </div>
+
+    <table class="table table-bordered table-hover align-middle">
+
+        <thead class="table-success">
+
+            <tr>
+
+                <th width="60">No</th>
+
+                <th>Nama Penghuni</th>
+
+                <th>Blok</th>
+
+                <th>Bulan</th>
+
+                <th>Tahun</th>
+
+                <th>Nominal</th>
+
+                <th>Status</th>
+
+                <th width="120">Aksi</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        <?php
+
+        $no = 1;
+
+        while($d = mysqli_fetch_assoc($query)){
+
+        ?>
+
+        <tr>
+
+            <td><?= $no++; ?></td>
+
+            <td><?= $d['nama']; ?></td>
+
+            <td><?= $d['blok']; ?> No.<?= $d['no_rumah']; ?></td>
+
+            <td><?= $d['bulan']; ?></td>
+
+            <td><?= $d['tahun']; ?></td>
+
+            <td>
+                Rp <?= number_format($d['nominal'],0,',','.'); ?>
+            </td>
+
+            <td>
+
+                <?php
+
+                if($d['status']=="Belum Bayar"){
+
+                    echo "<span class='badge bg-danger'>Belum Bayar</span>";
+
+                }elseif($d['status']=="Menunggu Verifikasi"){
+
+                    echo "<span class='badge bg-warning text-dark'>Menunggu</span>";
+
+                }else{
+
+                    echo "<span class='badge bg-success'>Lunas</span>";
+
+                }
+
+                ?>
+
+            </td>
+
+            <td>
+
+                <button
+                    class="btn btn-warning btn-sm"
+                    data-bs-toggle="modal"
+                    data-bs-target="#edit<?= $d['id_tagihan']; ?>">
+
+                    <i class="bi bi-pencil-square"></i>
+
+                </button>
+
+                <a
+                    href="?hapus=<?= $d['id_tagihan']; ?>"
+                    class="btn btn-danger btn-sm"
+                    onclick="return confirm('Yakin ingin menghapus tagihan ini?')">
+
+                    <i class="bi bi-trash"></i>
+
+                </a>
+
+            </td>
+
+        </tr>
+        <!-- Modal Edit -->
+<div class="modal fade" id="edit<?= $d['id_tagihan']; ?>" tabindex="-1">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <form method="POST">
+
+                <input type="hidden" name="id_tagihan" value="<?= $d['id_tagihan']; ?>">
+
+                <div class="modal-header bg-warning">
+
+                    <h5 class="modal-title">Edit Tagihan</h5>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label>Bulan</label>
+                        <select name="bulan" class="form-control">
+
+                            <option <?=($d['bulan']=="Januari")?"selected":"";?>>Januari</option>
+                            <option <?=($d['bulan']=="Februari")?"selected":"";?>>Februari</option>
+                            <option <?=($d['bulan']=="Maret")?"selected":"";?>>Maret</option>
+                            <option <?=($d['bulan']=="April")?"selected":"";?>>April</option>
+                            <option <?=($d['bulan']=="Mei")?"selected":"";?>>Mei</option>
+                            <option <?=($d['bulan']=="Juni")?"selected":"";?>>Juni</option>
+                            <option <?=($d['bulan']=="Juli")?"selected":"";?>>Juli</option>
+                            <option <?=($d['bulan']=="Agustus")?"selected":"";?>>Agustus</option>
+                            <option <?=($d['bulan']=="September")?"selected":"";?>>September</option>
+                            <option <?=($d['bulan']=="Oktober")?"selected":"";?>>Oktober</option>
+                            <option <?=($d['bulan']=="November")?"selected":"";?>>November</option>
+                            <option <?=($d['bulan']=="Desember")?"selected":"";?>>Desember</option>
+
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Tahun</label>
+                        <input type="number"
+                               name="tahun"
+                               class="form-control"
+                               value="<?= $d['tahun']; ?>">
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Status</label>
+
+                        <select name="status" class="form-control">
+
+                            <option value="Belum Bayar"
+                            <?=($d['status']=="Belum Bayar")?"selected":"";?>>
+                                Belum Bayar
+                            </option>
+
+                            <option value="Menunggu Verifikasi"
+                            <?=($d['status']=="Menunggu Verifikasi")?"selected":"";?>>
+                                Menunggu Verifikasi
+                            </option>
+
+                            <option value="Lunas"
+                            <?=($d['status']=="Lunas")?"selected":"";?>>
+                                Lunas
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal">
+
+                        Batal
+
+                    </button>
+
+                    <button
+                    type="submit"
+                    name="update"
+                    class="btn btn-warning">
+
+                        Update
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
 
 </div>
 
-<table class="table table-bordered table-hover">
+        <?php } ?>
 
-<thead class="table-success">
+        </tbody>
 
-<tr>
+    </table>
 
-<th>No</th>
-
-<th>Nama</th>
-
-<th>Blok</th>
-
-<th>Bulan</th>
-
-<th>Tahun</th>
-
-<th>Nominal</th>
-
-<th>Status</th>
-
-<th>Aksi</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-<?php
-
-$no=1;
-
-while($d=mysqli_fetch_array($query)){
-
-?>
-
-<tr>
-
-<td><?= $no++; ?></td>
-
-<td><?= $d['nama']; ?></td>
-
-<td><?= $d['blok']; ?>-<?= $d['no_rumah']; ?></td>
-
-<td><?= $d['bulan']; ?></td>
-
-<td><?= $d['tahun']; ?></td>
-
-<td>Rp <?= number_format($d['nominal']); ?></td>
-
-<td><?= $d['status']; ?></td>
-
-<td>
-
-<a
-href="?hapus=<?= $d['id_tagihan']; ?>"
-class="btn btn-danger btn-sm"
-onclick="return confirm('Hapus data?')">
-
-<i class="bi bi-trash"></i>
-
-</a>
-
-</td>
-
-</tr>
-
-<?php } ?>
-
-</tbody>
-
-</table>
 <!-- Modal Tambah -->
 <div class="modal fade" id="tambah" tabindex="-1">
 
-<div class="modal-dialog">
+    <div class="modal-dialog">
 
-<div class="modal-content">
+        <div class="modal-content">
 
-<form method="POST">
+            <form method="POST">
 
-<div class="modal-header bg-success text-white">
+                <div class="modal-header bg-success text-white">
 
-<h5 class="modal-title">
+                    <h5 class="modal-title">Tambah Tagihan</h5>
 
-Tambah Tagihan
+                    <button
+                    type="button"
+                    class="btn-close btn-close-white"
+                    data-bs-dismiss="modal">
+                    </button>
 
-</h5>
+                </div>
 
-<button
-type="button"
-class="btn-close btn-close-white"
-data-bs-dismiss="modal">
-</button>
+                <div class="modal-body">
 
-</div>
+                    <div class="mb-3">
 
-<div class="modal-body">
+                        <label>Penghuni</label>
 
-<div class="mb-3">
+                        <select
+                        name="id_penghuni"
+                        class="form-control"
+                        required>
 
-<label>Penghuni</label>
+                            <option value="">-- Pilih Penghuni --</option>
 
-<select
-name="id_penghuni"
-class="form-control"
-required>
+                            <?php
+                            mysqli_data_seek($penghuni,0);
+                            while($p=mysqli_fetch_assoc($penghuni)){
+                            ?>
 
-<option value="">-- Pilih Penghuni --</option>
+                            <option value="<?= $p['id_penghuni']; ?>">
 
-<?php
-mysqli_data_seek($penghuni,0);
-while($p=mysqli_fetch_array($penghuni)){
-?>
+                                <?= $p['nama']; ?> -
+                                <?= $p['blok']; ?> No.<?= $p['no_rumah']; ?>
 
-<option value="<?= $p['id_penghuni']; ?>">
+                            </option>
 
-<?= $p['nama']; ?> -
-<?= $p['blok']; ?>
-No.<?= $p['no_rumah']; ?>
+                            <?php } ?>
 
-</option>
+                        </select>
 
-<?php } ?>
+                    </div>
 
-</select>
+                    <div class="mb-3">
 
-</div>
+                        <label>Bulan</label>
 
-<div class="mb-3">
+                        <select name="bulan" class="form-control">
 
-<label>Bulan</label>
+                            <option>Januari</option>
+                            <option>Februari</option>
+                            <option>Maret</option>
+                            <option>April</option>
+                            <option>Mei</option>
+                            <option>Juni</option>
+                            <option>Juli</option>
+                            <option>Agustus</option>
+                            <option>September</option>
+                            <option>Oktober</option>
+                            <option>November</option>
+                            <option>Desember</option>
 
-<select
-name="bulan"
-class="form-control"
-required>
+                        </select>
 
-<option>Januari</option>
-<option>Februari</option>
-<option>Maret</option>
-<option>April</option>
-<option>Mei</option>
-<option>Juni</option>
-<option>Juli</option>
-<option>Agustus</option>
-<option>September</option>
-<option>Oktober</option>
-<option>November</option>
-<option>Desember</option>
+                    </div>
 
-</select>
+                    <div class="mb-3">
 
-</div>
+                        <label>Tahun</label>
 
-<div class="mb-3">
+                        <input
+                        type="number"
+                        name="tahun"
+                        class="form-control"
+                        value="<?= date('Y'); ?>"
+                        required>
 
-<label>Tahun</label>
+                    </div>
 
-<input
-type="number"
-name="tahun"
-class="form-control"
-value="<?= date('Y'); ?>"
-required>
+                    <div class="alert alert-success">
 
-</div>
+                        Nominal IPL :
+                        <strong>Rp100.000</strong>
 
-<p class="text-success">
+                    </div>
 
-Nominal IPL :
-<b>Rp100.000</b>
+                </div>
 
-</p>
+                <div class="modal-footer">
 
-</div>
+                    <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal">
 
-<div class="modal-footer">
+                        Batal
 
-<button
-type="button"
-class="btn btn-secondary"
-data-bs-dismiss="modal">
+                    </button>
 
-Batal
+                    <button
+                    type="submit"
+                    name="simpan"
+                    class="btn btn-success">
 
-</button>
+                        Simpan
 
-<button
-type="submit"
-name="simpan"
-class="btn btn-success">
+                    </button>
 
-Simpan
+                </div>
 
-</button>
+            </form>
 
-</div>
+        </div>
 
-</form>
-
-</div>
-
-</div>
-
-</div>
+    </div>
 
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
-
 </html>
