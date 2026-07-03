@@ -14,11 +14,18 @@ include("../../config/koneksi.php");
 if(isset($_POST['simpan'])){
 
     $nama      = $_POST['nama'];
-    $blok      = $_POST['blok'];
+    $blok      = strtoupper($_POST['blok']);
     $no_rumah  = $_POST['no_rumah'];
     $no_hp     = $_POST['no_hp'];
-    $username  = $_POST['username'];
-    $password  = $_POST['password'];
+
+    // Username otomatis
+    $username = strtolower($blok.$no_rumah);
+
+    // Ambil nama depan
+    $nama_depan = strtolower(explode(" ", trim($nama))[0]);
+
+    // Password otomatis
+    $password = strtolower($nama_depan.$blok.$no_rumah);
 
     mysqli_query($conn,"INSERT INTO penghuni
     (nama,blok,no_rumah,no_hp,username,password)
@@ -26,7 +33,63 @@ if(isset($_POST['simpan'])){
     ('$nama','$blok','$no_rumah','$no_hp','$username','$password')");
 
     echo "<script>
-    alert('Data berhasil ditambahkan');
+    alert('Data penghuni berhasil ditambahkan');
+    window.location='index.php';
+    </script>";
+
+}
+
+// =========================
+// UPDATE DATA
+// =========================
+if(isset($_POST['update'])){
+
+    $id         = $_POST['id_penghuni'];
+    $nama       = $_POST['nama'];
+    $blok       = strtoupper($_POST['blok']);
+    $no_rumah   = $_POST['no_rumah'];
+    $no_hp      = $_POST['no_hp'];
+
+    // Username otomatis
+    $username = strtolower($blok.$no_rumah);
+
+    // Password otomatis
+    $nama_depan = strtolower(explode(" ", trim($nama))[0]);
+    $password = $nama_depan.strtolower($blok).$no_rumah;
+
+    mysqli_query($conn,"UPDATE penghuni SET
+
+        nama='$nama',
+        blok='$blok',
+        no_rumah='$no_rumah',
+        no_hp='$no_hp',
+        username='$username',
+        password='$password'
+
+        WHERE id_penghuni='$id'
+    ");
+
+    echo "<script>
+
+    alert('Data berhasil diubah');
+
+    window.location='index.php';
+
+    </script>";
+
+}
+
+// =========================
+// HAPUS DATA
+// =========================
+if(isset($_GET['hapus'])){
+
+    $id = $_GET['hapus'];
+
+    mysqli_query($conn,"DELETE FROM penghuni WHERE id_penghuni='$id'");
+
+    echo "<script>
+    alert('Data berhasil dihapus');
     window.location='index.php';
     </script>";
 
@@ -125,9 +188,6 @@ $query = mysqli_query($conn, "SELECT * FROM penghuni ORDER BY id_penghuni DESC")
 
                 Tambah Penghuni
 
-</button>
-
-
             </button>
 
         </div>
@@ -157,75 +217,63 @@ $query = mysqli_query($conn, "SELECT * FROM penghuni ORDER BY id_penghuni DESC")
 
                         <th>No HP</th>
 
-                        <th>Username</th>
-
                         <th width="170">Aksi</th>
 
                     </tr>
 
                     </thead>
 
-                    <tbody>
+<tbody>
 
-                    <?php
+<?php
+$no = 1;
 
-                    $no = 1;
+while($d = mysqli_fetch_assoc($query)){
+?>
 
-                    while($d = mysqli_fetch_assoc($query)){
+<tr>
 
-                    ?>
+    <td><?= $no++; ?></td>
 
-                        <tr>
+    <td><?= $d['nama']; ?></td>
 
-                            <td><?= $no++; ?></td>
+    <td><?= $d['blok']; ?></td>
 
-                            <td><?= $d['nama']; ?></td>
+    <td><?= $d['no_rumah']; ?></td>
 
-                            <td><?= $d['blok']; ?></td>
+    <td><?= $d['no_hp']; ?></td>
 
-                            <td><?= $d['no_rumah']; ?></td>
+    <td>
 
-                            <td><?= $d['no_hp']; ?></td>
+        <button
+        type="button"
+        class="btn btn-warning btn-sm"
+        data-bs-toggle="modal"
+        data-bs-target="#edit<?= $d['id_penghuni']; ?>">
 
-                            <td><?= $d['username']; ?></td>
+            <i class="bi bi-pencil-square"></i>
 
-                            <td>
+        </button>
 
-                                <button class="btn btn-warning btn-sm">
+        <a
+        href="?hapus=<?= $d['id_penghuni']; ?>"
+        class="btn btn-danger btn-sm"
+        onclick="return confirm('Yakin ingin menghapus data ini?')">
 
-                                    <i class="bi bi-pencil-square"></i>
+            <i class="bi bi-trash"></i>
 
-                                </button>
+        </a>
 
-                                <button class="btn btn-danger btn-sm">
+    </td>
 
-                                    <i class="bi bi-trash"></i>
+</tr>
 
-                                </button>
-
-                            </td>
-
-                        </tr>
-
-                    <?php } ?>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-<!-- Modal Tambah -->
+<!-- Modal Edit -->
 
 <div
 class="modal fade"
-id="modalTambah">
+id="edit<?= $d['id_penghuni']; ?>"
+tabindex="-1">
 
 <div class="modal-dialog">
 
@@ -233,15 +281,21 @@ id="modalTambah">
 
 <form method="POST">
 
-<div class="modal-header bg-success text-white">
+<input
+type="hidden"
+name="id_penghuni"
+value="<?= $d['id_penghuni']; ?>">
 
-<h5>Tambah Penghuni</h5>
+<div class="modal-header bg-warning">
+
+<h5 class="modal-title">
+Edit Penghuni
+</h5>
 
 <button
 type="button"
 class="btn-close"
 data-bs-dismiss="modal">
-
 </button>
 
 </div>
@@ -256,6 +310,7 @@ data-bs-dismiss="modal">
 type="text"
 name="nama"
 class="form-control"
+value="<?= $d['nama']; ?>"
 required>
 
 </div>
@@ -268,7 +323,7 @@ required>
 type="text"
 name="blok"
 class="form-control"
-placeholder="Contoh : C03"
+value="<?= $d['blok']; ?>"
 required>
 
 </div>
@@ -281,6 +336,7 @@ required>
 type="text"
 name="no_rumah"
 class="form-control"
+value="<?= $d['no_rumah']; ?>"
 required>
 
 </div>
@@ -293,30 +349,7 @@ required>
 type="text"
 name="no_hp"
 class="form-control"
-required>
-
-</div>
-
-<div class="mb-3">
-
-<label>Username</label>
-
-<input
-type="text"
-name="username"
-class="form-control"
-required>
-
-</div>
-
-<div class="mb-3">
-
-<label>Password</label>
-
-<input
-type="password"
-name="password"
-class="form-control"
+value="<?= $d['no_hp']; ?>"
 required>
 
 </div>
@@ -326,19 +359,20 @@ required>
 <div class="modal-footer">
 
 <button
+type="button"
 class="btn btn-secondary"
-data-bs-dismiss="modal"
-type="button">
+data-bs-dismiss="modal">
 
 Batal
 
 </button>
 
 <button
-class="btn btn-success"
-name="simpan">
+type="submit"
+class="btn btn-warning"
+name="update">
 
-Simpan
+Update
 
 </button>
 
@@ -349,6 +383,121 @@ Simpan
 </div>
 
 </div>
+
+</div>
+
+<?php } ?>
+
+</tbody>
+
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Modal Tambah -->
+<div class="modal fade" id="modalTambah" tabindex="-1" aria-hidden="true">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <form method="POST">
+
+                <div class="modal-header bg-success text-white">
+
+                    <h5 class="modal-title">
+                        Tambah Penghuni
+                    </h5>
+
+                    <button
+                        type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal">
+                    </button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label class="form-label">Nama</label>
+
+                        <input
+                            type="text"
+                            name="nama"
+                            class="form-control"
+                            required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Blok</label>
+
+                        <input
+                            type="text"
+                            name="blok"
+                            class="form-control"
+                            placeholder="Contoh : C03"
+                            required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Nomor Rumah</label>
+
+                        <input
+                            type="text"
+                            name="no_rumah"
+                            class="form-control"
+                            placeholder="Contoh : 17"
+                            required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">No HP</label>
+
+                        <input
+                            type="text"
+                            name="no_hp"
+                            class="form-control"
+                            placeholder="08xxxxxxxxxx"
+                            required>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+
+                        Batal
+
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="btn btn-success"
+                        name="simpan">
+
+                        Simpan
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
 
 </div>
 
