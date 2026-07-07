@@ -3,6 +3,7 @@ session_start();
 
 if(isset($_SESSION['admin'])){
     header("Location: dashboard.php");
+    exit;
 }
 ?>
 
@@ -21,15 +22,19 @@ if(isset($_SESSION['admin'])){
 
 </head>
 
-<body>
+<body class="bg-light">
 
-<div class="login-box">
+<div class="container">
 
-<div class="card shadow-lg border-0">
+<div class="row justify-content-center align-items-center vh-100">
+
+<div class="col-md-6 col-lg-5">
+
+<div class="card shadow-lg border-0 rounded-4">
 
 <div class="card-body p-5">
 
-<h2 class="text-center mb-3 text-success">
+<h2 class="text-center text-success mb-2">
 🌾 Padi Residence
 </h2>
 
@@ -38,52 +43,62 @@ Login Admin IPL
 </h5>
 
 <?php
-
 if(isset($_GET['pesan'])){
+?>
 
-echo "<div class='alert alert-danger text-center'>
+<div class="alert alert-danger text-center">
 Username atau Password salah!
-</div>";
+</div>
 
+<?php
 }
-
 ?>
 
 <form action="proses_login.php" method="POST">
 
 <div class="mb-3">
 
-<label class="form-label">Username</label>
+<label class="form-label">
+Username
+</label>
 
 <input
 type="text"
 name="username"
 class="form-control"
+placeholder="Masukkan Username"
 required>
 
 </div>
 
 <div class="mb-4">
 
-<label class="form-label">Password</label>
+<label class="form-label">
+Password
+</label>
 
 <input
 type="password"
 name="password"
 class="form-control"
+placeholder="Masukkan Password"
 required>
 
 </div>
 
 <button
-class="btn btn-success w-100"
-type="submit">
+type="submit"
+class="btn btn-success w-100">
 
 LOGIN
 
 </button>
 
 </form>
+
+</div>
+
+</div>
 
 </div>
 
