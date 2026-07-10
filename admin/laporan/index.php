@@ -1,10 +1,5 @@
 <?php
-session_start();
-
-if(!isset($_SESSION['admin'])){
-    header("Location: ../login.php");
-    exit;
-}
+require_once "../../auth/cek_login_admin.php";
 
 include("../../config/koneksi.php");
 
@@ -275,67 +270,60 @@ Cetak Laporan
 
 <form method="GET">
 
-<div class="row">
+<div class="row g-3 align-items-end">
 
-<div class="col-md-4">
+    <div class="col-md-3">
 
-<label>Bulan</label>
+        <label class="form-label">Bulan</label>
 
-<select
-name="bulan"
-class="form-control">
+        <select name="bulan" class="form-control">
 
-<option value="">Semua Bulan</option>
+            <option value="">Semua Bulan</option>
 
-<option value="Januari">Januari</option>
-<option value="Februari">Februari</option>
-<option value="Maret">Maret</option>
-<option value="April">April</option>
-<option value="Mei">Mei</option>
-<option value="Juni">Juni</option>
-<option value="Juli">Juli</option>
-<option value="Agustus">Agustus</option>
-<option value="September">September</option>
-<option value="Oktober">Oktober</option>
-<option value="November">November</option>
-<option value="Desember">Desember</option>
+            <option value="Januari">Januari</option>
+            <option value="Februari">Februari</option>
+            <option value="Maret">Maret</option>
+            <option value="April">April</option>
+            <option value="Mei">Mei</option>
+            <option value="Juni">Juni</option>
+            <option value="Juli">Juli</option>
+            <option value="Agustus">Agustus</option>
+            <option value="September">September</option>
+            <option value="Oktober">Oktober</option>
+            <option value="November">November</option>
+            <option value="Desember">Desember</option>
 
-</select>
+        </select>
 
-</div>
+    </div>
 
-<div class="col-md-3">
+    <div class="col-md-3">
 
-<label>Tahun</label>
+        <label class="form-label">Tahun</label>
 
-<input
-type="number"
-name="tahun"
-class="form-control"
-value="<?= $tahun; ?>">
+        <input
+            type="text"
+            name="tahun"
+            class="form-control"
+            placeholder="2026"
+            maxlength="4"
+            oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+            value="<?= isset($_GET['tahun']) ? $_GET['tahun'] : ''; ?>">
 
-</div>
+    </div>
 
-<div class="col-md-3 d-flex align-items-end">
+    <div class="col-md-4 d-flex align-items-end">
 
-<button
-class="btn btn-success me-2">
+        <button class="btn btn-success me-2">
+            <i class="bi bi-funnel"></i>
+            Filter
+        </button>
 
-<i class="bi bi-funnel"></i>
+        <a href="index.php" class="btn btn-secondary">
+            Reset
+        </a>
 
-Filter
-
-</button>
-
-<a
-href="index.php"
-class="btn btn-secondary">
-
-Reset
-
-</a>
-
-</div>
+    </div>
 
 </div>
 

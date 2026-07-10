@@ -56,6 +56,7 @@ Login Penghuni
 type="text"
 name="username"
 class="form-control"
+value="<?= isset($_COOKIE['username']) ? $_COOKIE['username'] : ''; ?>"
 required>
 
 </div>
@@ -69,6 +70,24 @@ type="password"
 name="password"
 class="form-control"
 required>
+
+</div>
+
+<div class="form-check mb-3">
+
+<input
+class="form-check-input"
+type="checkbox"
+name="ingat_saya"
+id="ingat_saya">
+
+<label
+class="form-check-label"
+for="ingat_saya">
+
+Ingat Saya
+
+</label>
 
 </div>
 

@@ -1,12 +1,89 @@
 <?php
-session_start();
-
-if (!isset($_SESSION['admin'])) {
-    header("Location: ../login.php");
-    exit;
-}
+require_once "../../auth/cek_login_admin.php";
 
 include("../../config/koneksi.php");
+
+/* ==========================================
+   GENERATE TAGIHAN BULAN INI
+========================================== */
+
+if(isset($_GET['generate'])){
+
+    $bulan = ["","Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"][date("n")];
+    $tahun = date("Y");
+
+    $tanggal_dibuat = date("Y-m-d");
+
+    $jatuh_tempo = date("Y-m-10");
+
+    $nominal = 100000;
+
+    $penghuni = mysqli_query($conn,"
+    SELECT *
+    FROM penghuni
+    ");
+
+    while($p = mysqli_fetch_assoc($penghuni)){
+
+        $id_penghuni = $p['id_penghuni'];
+
+        // Cek apakah sudah ada tagihan bulan ini
+
+        $cek = mysqli_query($conn,"
+        SELECT *
+        FROM tagihan
+        WHERE
+        id_penghuni='$id_penghuni'
+        AND bulan='$bulan'
+        AND tahun='$tahun'
+        ");
+
+        if(mysqli_num_rows($cek)==0){
+
+            mysqli_query($conn,"
+            INSERT INTO tagihan
+            (
+            id_penghuni,
+            bulan,
+            tahun,
+            nominal,
+            tanggal_dibuat,
+            jatuh_tempo,
+            status
+            )
+
+            VALUES
+
+            (
+            '$id_penghuni',
+            '$bulan',
+            '$tahun',
+            '$nominal',
+            '$tanggal_dibuat',
+            '$jatuh_tempo',
+            'Belum Bayar'
+            )
+            ");
+
+        }
+
+    }
+
+    echo "
+
+    <script>
+
+    alert('Tagihan bulan ini berhasil dibuat.');
+
+    window.location='index.php';
+
+    </script>
+
+    ";
+
+    exit;
+
+}
 
 // Tambah Tagihan
 if(isset($_POST['simpan'])){
@@ -143,20 +220,21 @@ $penghuni = mysqli_query($conn,"SELECT * FROM penghuni");
 
 <div class="content">
 
-<div class="d-flex justify-content-between mb-3">
+<div class="d-flex justify-content-between align-items-center mb-4">
 
-<h2>Data Tagihan IPL</h2>
-
-<button
-class="btn btn-success"
-data-bs-toggle="modal"
-data-bs-target="#tambah">
-
-        Tambah Tagihan
-
-        </button>
-
+    <div>
+        <h2>Data Tagihan</h2>
+        <p class="text-muted">
+            Kelola seluruh tagihan penghuni.
+        </p>
     </div>
+
+    <a href="?generate=1" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i>
+        Generate Tagihan Bulan Ini
+    </a>
+
+</div>
 
     <table class="table table-bordered table-hover align-middle">
 

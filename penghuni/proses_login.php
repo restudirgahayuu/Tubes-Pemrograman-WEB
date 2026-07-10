@@ -16,9 +16,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         if($password == $data['password']){
 
+            // SESSION
             $_SESSION['penghuni'] = true;
             $_SESSION['id_penghuni'] = $data['id_penghuni'];
             $_SESSION['nama'] = $data['nama'];
+
+            // COOKIE INGAT SAYA
+            if(isset($_POST['ingat_saya'])){
+
+                setcookie(
+                    "username",
+                    $username,
+                    time() + (86400 * 7), // Berlaku 7 hari
+                    "/"
+                );
+
+            }else{
+
+                // Hapus cookie jika tidak dicentang
+                setcookie(
+                    "username",
+                    "",
+                    time() - 3600,
+                    "/"
+                );
+
+            }
 
             header("Location: dashboard.php");
             exit;

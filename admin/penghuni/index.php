@@ -1,10 +1,5 @@
 <?php
-session_start();
-
-if (!isset($_SESSION['admin'])) {
-    header("Location: ../login.php");
-    exit;
-}
+require_once "../../auth/cek_login_admin.php";
 
 include("../../config/koneksi.php");
 
@@ -13,24 +8,91 @@ include("../../config/koneksi.php");
 // =========================
 if(isset($_POST['simpan'])){
 
-    $nama      = $_POST['nama'];
-    $blok      = strtoupper($_POST['blok']);
-    $no_rumah  = $_POST['no_rumah'];
-    $no_hp     = $_POST['no_hp'];
+    $nama = $_POST['nama'];
+    $blok = strtoupper($_POST['blok']);
+    $no_rumah = $_POST['no_rumah'];
+    $no_hp = $_POST['no_hp'];
 
-    // Username otomatis
-    $username = strtolower($blok.$no_rumah);
+if (!preg_match('/^[0-9]{10,13}$/', $no_hp)) {
 
-    // Ambil nama depan
-    $nama_depan = strtolower(explode(" ", trim($nama))[0]);
+    echo "<script>
+        alert('Nomor HP hanya boleh berisi angka.');
+        history.back();
+    </script>";
 
-    // Password otomatis
-    $password = strtolower($nama_depan.$blok.$no_rumah);
+    exit;
+}
 
-    mysqli_query($conn,"INSERT INTO penghuni
-    (nama,blok,no_rumah,no_hp,username,password)
-    VALUES
-    ('$nama','$blok','$no_rumah','$no_hp','$username','$password')");
+// Username otomatis
+$username = strtolower($blok.$no_rumah);
+
+// Ambil nama depan
+$nama_depan = strtolower(explode(" ", trim($nama))[0]);
+
+// Password otomatis
+$password = strtolower($nama_depan.$blok.$no_rumah);
+
+// =========================
+// VALIDASI DATA GANDA
+// =========================
+
+$cek = mysqli_query($conn,"
+SELECT *
+FROM penghuni
+WHERE blok='$blok'
+AND no_rumah='$no_rumah'
+");
+
+if(mysqli_num_rows($cek) > 0){
+
+    echo "<script>
+
+    alert('Penghuni dengan blok dan nomor rumah tersebut sudah terdaftar!');
+
+    window.location='index.php';
+
+    </script>";
+
+    exit;
+
+}
+
+mysqli_query($conn,"
+INSERT INTO penghuni
+(nama,blok,no_rumah,no_hp,username,password)
+VALUES
+('$nama','$blok','$no_rumah','$no_hp','$username','$password')");
+
+/* ==========================================
+   OTOMATIS MEMBUAT TAGIHAN PERTAMA
+========================================== */
+
+$id_penghuni = mysqli_insert_id($conn);
+
+$bulan = date("F");
+$tahun = date("Y");
+$nominal = 100000;
+$jatuh_tempo = date("Y-m-10");
+
+mysqli_query($conn,"
+INSERT INTO tagihan
+(
+id_penghuni,
+bulan,
+tahun,
+nominal,
+jatuh_tempo,
+status
+)
+VALUES
+(
+'$id_penghuni',
+'$bulan',
+'$tahun',
+'$nominal',
+'$jatuh_tempo',
+'Belum Bayar'
+)");
 
     echo "<script>
     alert('Data penghuni berhasil ditambahkan');
@@ -196,11 +258,6 @@ $query = mysqli_query($conn, "SELECT * FROM penghuni ORDER BY id_penghuni DESC")
 
             <div class="card-body">
 
-                <input
-                        type="text"
-                        class="form-control mb-3"
-                        placeholder="Cari nama penghuni...">
-
                 <table class="table table-hover table-bordered align-middle">
 
                     <thead class="table-success">
@@ -350,6 +407,11 @@ type="text"
 name="no_hp"
 class="form-control"
 value="<?= $d['no_hp']; ?>"
+maxlength="13"
+pattern="[0-9]+"
+inputmode="numeric"
+oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+placeholder="08xxxxxxxxxx"
 required>
 
 </div>
@@ -461,12 +523,16 @@ Update
                     <div class="mb-3">
                         <label class="form-label">No HP</label>
 
-                        <input
-                            type="text"
-                            name="no_hp"
-                            class="form-control"
-                            placeholder="08xxxxxxxxxx"
-                            required>
+<input
+type="text"
+name="no_hp"
+class="form-control"
+maxlength="13"
+pattern="[0-9]+"
+inputmode="numeric"
+oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+placeholder="08xxxxxxxxxx"
+required>
                     </div>
 
                 </div>

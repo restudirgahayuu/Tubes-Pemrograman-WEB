@@ -1,71 +1,326 @@
-body{
-    margin:0;
-    background:#eef2f7;
-    font-family:'Segoe UI',sans-serif;
+/* =====================================================
+   RESET
+===================================================== */
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
 }
 
-/* SIDEBAR */
+body{
+background:#eef2f7;
+font-family:'Segoe UI',sans-serif;
+overflow-x:hidden;
+}
+
+/* =====================================================
+   SIDEBAR DESKTOP
+===================================================== */
 
 .sidebar{
-    position:fixed;
-    top:0;
-    left:0;
-    width:260px;
-    height:100vh;
-    background:#198754;
-    overflow-y:auto;
-    z-index:999;
+position:fixed;
+top:0;
+left:0;
+width:260px;
+height:100vh;
+background:#198754;
+overflow-y:auto;
+z-index:1030;
 }
 
 .sidebar h2{
-    color:#fff;
-    text-align:center;
-    padding:25px 0;
-    margin:0;
-    font-size:28px;
-    border-bottom:1px solid rgba(255,255,255,.2);
+color:#fff;
+text-align:center;
+padding:25px 15px;
+margin:0;
+font-size:28px;
+border-bottom:1px solid rgba(255,255,255,.15);
 }
 
 .sidebar a{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    width:100%;
-    padding:16px 24px;
-    margin:0;
-    color:#fff;
-    text-decoration:none;
-    box-sizing:border-box;
-    transition:.3s;
+display:flex;
+align-items:center;
+gap:12px;
+width:100%;
+padding:15px 22px;
+color:#fff;
+text-decoration:none;
+transition:.3s;
 }
 
 .sidebar a:hover{
-    background:#157347;
+background:#157347;
 }
 
 .sidebar a.active{
-    background:#146c43;
-    color:#fff;
-    font-weight:600;
+background:#146c43;
+border-left:5px solid #fff;
+font-weight:600;
 }
 
 .sidebar i{
-    width:24px;
-    font-size:20px;
-    text-align:center;
+width:22px;
+text-align:center;
+font-size:18px;
 }
 
-/* CONTENT */
+/* =====================================================
+   MOBILE TOPBAR (hidden on desktop/laptop/tablet)
+===================================================== */
+
+.mobile-topbar{
+display:none;
+align-items:center;
+justify-content:space-between;
+background:#198754;
+color:#fff;
+padding:12px 16px;
+position:sticky;
+top:0;
+z-index:1020;
+}
+
+.mobile-topbar .btn-toggle-sidebar{
+background:transparent;
+border:none;
+color:#fff;
+font-size:1.5rem;
+line-height:1;
+padding:4px 8px;
+}
+
+.mobile-topbar .brand{
+font-weight:600;
+font-size:1.1rem;
+}
+
+/* =====================================================
+   CONTENT
+===================================================== */
 
 .content{
-    margin-left:260px;
-    min-height:100vh;
-    padding:30px;
+margin-left:260px;
+min-height:100vh;
+padding:30px;
 }
 
-/* CARD */
+/* =====================================================
+   CARD
+===================================================== */
 
 .card{
-    border:none;
-    border-radius:18px;
+border:none;
+border-radius:18px;
+}
+
+/* =====================================================
+   BUTTON
+===================================================== */
+
+.btn{
+border-radius:10px;
+}
+
+/* =====================================================
+   TABLE
+===================================================== */
+
+.table-responsive{
+overflow-x:auto;
+-webkit-overflow-scrolling:touch;
+}
+
+.table{
+vertical-align:middle;
+white-space:nowrap;
+}
+
+/* =====================================================
+   FOTO
+===================================================== */
+
+.foto-profil{
+width:160px;
+height:160px;
+border-radius:50%;
+object-fit:cover;
+border:5px solid #198754;
+}
+
+/* =====================================================
+   IMAGES
+===================================================== */
+
+img{
+max-width:100%;
+height:auto;
+}
+
+/* =====================================================
+   OFFCANVAS
+===================================================== */
+
+.offcanvas{
+background:#198754;
+}
+
+.offcanvas .offcanvas-header{
+border-bottom:1px solid rgba(255,255,255,.15);
+}
+
+.offcanvas .offcanvas-title{
+color:#fff;
+}
+
+.offcanvas a{
+display:flex;
+align-items:center;
+gap:12px;
+color:#fff;
+text-decoration:none;
+padding:14px 20px;
+}
+
+.offcanvas a:hover{
+background:#157347;
+}
+
+.offcanvas a.active{
+background:#146c43;
+border-left:5px solid #fff;
+font-weight:600;
+}
+
+.offcanvas .btn-close{
+filter:invert(1);
+}
+
+/* =====================================================
+   LAPTOP (992px - 1199px)
+===================================================== */
+
+@media (max-width:1199.98px){
+
+.content{
+padding:25px;
+}
+
+}
+
+/* =====================================================
+   TABLET & MOBILE (<992px)
+   Sidebar -> Offcanvas, Topbar muncul
+===================================================== */
+
+@media (max-width:991.98px){
+
+.sidebar{
+display:none;
+}
+
+.mobile-topbar{
+display:flex;
+}
+
+.content{
+margin-left:0;
+width:100%;
+padding:20px;
+}
+
+.card{
+margin-bottom:20px;
+}
+
+.foto-profil{
+width:120px;
+height:120px;
+}
+
+.table{
+font-size:14px;
+}
+
+}
+
+/* =====================================================
+   MOBILE (<768px)
+===================================================== */
+
+@media (max-width:767.98px){
+
+.content{
+padding:16px;
+}
+
+h1{
+font-size:24px;
+}
+
+h2{
+font-size:22px;
+}
+
+h3{
+font-size:20px;
+}
+
+.card-body{
+padding:1rem;
+}
+
+.foto-profil{
+width:110px;
+height:110px;
+}
+
+.table{
+font-size:13.5px;
+}
+
+.modal-dialog{
+margin:.75rem;
+}
+
+}
+
+/* =====================================================
+   EXTRA SMALL (<576px)
+===================================================== */
+
+@media (max-width:575.98px){
+
+.content{
+padding:12px;
+}
+
+.foto-profil{
+width:100px;
+height:100px;
+}
+
+.btn{
+width:100%;
+margin-bottom:10px;
+}
+
+.modal-footer{
+flex-wrap:wrap;
+gap:8px;
+}
+
+.modal-footer .btn{
+width:100%;
+margin-bottom:0;
+}
+
+.table{
+font-size:13px;
+}
+
+.mobile-topbar .brand{
+font-size:1rem;
+}
+
 }

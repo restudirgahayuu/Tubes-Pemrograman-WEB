@@ -9,6 +9,7 @@ if(isset($_SESSION['admin'])){
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
 
 <meta charset="UTF-8">
@@ -67,11 +68,12 @@ type="text"
 name="username"
 class="form-control"
 placeholder="Masukkan Username"
+value="<?= isset($_COOKIE['admin_username']) ? $_COOKIE['admin_username'] : ''; ?>"
 required>
 
 </div>
 
-<div class="mb-4">
+<div class="mb-3">
 
 <label class="form-label">
 Password
@@ -83,6 +85,24 @@ name="password"
 class="form-control"
 placeholder="Masukkan Password"
 required>
+
+</div>
+
+<div class="form-check mb-4">
+
+<input
+class="form-check-input"
+type="checkbox"
+name="ingat_saya"
+id="ingat_saya">
+
+<label
+class="form-check-label"
+for="ingat_saya">
+
+Ingat Saya
+
+</label>
 
 </div>
 

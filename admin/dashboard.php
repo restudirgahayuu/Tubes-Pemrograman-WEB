@@ -1,10 +1,5 @@
 <?php
-session_start();
-
-if(!isset($_SESSION['admin'])){
-    header("Location: login.php");
-    exit;
-}
+require_once "../auth/cek_login_admin.php";
 
 include("../config/koneksi.php");
 

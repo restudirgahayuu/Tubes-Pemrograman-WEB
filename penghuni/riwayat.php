@@ -1,10 +1,5 @@
 <?php
-session_start();
-
-if(!isset($_SESSION['penghuni'])){
-    header("Location: login.php");
-    exit;
-}
+require_once "../auth/cek_login_penghuni.php";
 
 include("../config/koneksi.php");
 
